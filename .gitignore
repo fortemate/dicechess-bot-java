@@ -1,0 +1,23 @@
+target/
+dependency-reduced-pom.xml
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+.m2-settings.xml
+
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Logs & temp
+*.log
+.DS_Store

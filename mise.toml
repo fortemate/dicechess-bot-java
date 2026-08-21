@@ -1,0 +1,32 @@
+[tools]
+java = "temurin-25"
+maven = "latest"
+gh = "latest"
+
+[tasks.compile]
+description = "Compile Java sources and tests"
+run = "mvn test-compile"
+
+[tasks.test]
+description = "Run unit tests and generate JaCoCo coverage"
+run = "mvn test"
+
+[tasks.format]
+description = "Format Java source code with Spotless"
+run = "mvn spotless:apply"
+
+[tasks.check]
+description = "Run Spotless formatting check, tests, and package build"
+run = "mvn spotless:check clean test package"
+
+[tasks.clean]
+description = "Clean Maven build target directory"
+run = "mvn clean"
+
+[tasks."docs:build"]
+description = "Generate Javadoc HTML documentation"
+run = "mvn javadoc:javadoc"
+
+[tasks.run]
+description = "Run bot application locally"
+run = "mvn exec:java -Dexec.mainClass='dicechess.bot.Main'"

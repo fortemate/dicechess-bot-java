@@ -1,0 +1,7 @@
+target/
+.git/
+.gitignore
+.idea/
+*.md
+mise.toml
+docker-compose.yaml

@@ -1,0 +1,133 @@
+name: "CD: Publish Bot Image"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "models/**"
+      - "pom.xml"
+      - "Dockerfile"
+      - ".dockerignore"
+      - ".github/workflows/deploy.yaml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # for the build-provenance attestation
+      id-token: write
+      attestations: write
+      # attest-build-provenance v4 also registers the pushed image on the
+      # organization's linked-artifacts page ("storage record"). It only tries
+      # this for org-owned repositories, which is why the warning appeared right
+      # after the transfer to fortemate and the bump from v2. The attestation
+      # itself is unaffected — the call is wrapped in a try/catch — but without
+      # this permission the record cannot be written.
+      artifact-metadata: write
+    steps:
+      - name: Harden the runner (audit egress)
+        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
+        env:
+          # Attach the annotations to the image index as well, not only to the
+          # per-platform manifests. This is a multi-arch build, so registries and
+          # the GitHub package page read the index; with the default (`manifest`)
+          # the index carries no annotations and the package page shows no
+          # description at all, even though every per-arch config has the labels.
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: index,manifest
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # `title`, `description`, `licenses`, `url` and `source` are derived
+          # from the repository itself; these are the values GitHub cannot know.
+          #
+          # The same four have to be repeated under `annotations` below. The
+          # action builds the two outputs from separate inputs — `getAnnotations`
+          # takes the auto-generated OCI list plus the `annotations` input only,
+          # and never looks at `labels` — so custom values passed here alone
+          # reach the per-arch configs but never the index. That is exactly what
+          # happened on the first run: 11 labels in the config, 8 annotations on
+          # the index, with the auto-generated title instead of this one.
+          labels: |
+            org.opencontainers.image.title=Dice Chess Java Bot
+            org.opencontainers.image.vendor=Fortemate
+            org.opencontainers.image.documentation=https://bots.jc.id.lv
+            org.opencontainers.image.base.name=docker.io/library/eclipse-temurin:25-jre
+          annotations: |
+            org.opencontainers.image.title=Dice Chess Java Bot
+            org.opencontainers.image.vendor=Fortemate
+            org.opencontainers.image.documentation=https://bots.jc.id.lv
+            org.opencontainers.image.base.name=docker.io/library/eclipse-temurin:25-jre
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha,format=short
+
+      - name: Build and push image
+        id: push
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Fails the workflow on fixable CRITICAL vulnerabilities in the published
+      # image. Runs post-push: the tag is already out, but a red run blocks the
+      # silent rot and is visible before anyone redeploys the bot.
+      - name: Scan published image with Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Attest build provenance (SLSA)
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true

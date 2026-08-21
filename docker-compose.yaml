@@ -1,0 +1,14 @@
+services:
+  dicechess-bot-java:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      DICECHESS_WEBHOOK_SECRET: "${DICECHESS_WEBHOOK_SECRET:-development-secret}"
+      MODEL_PATH: "/app/models/baseline.onnx"
+      ORACLE_SEARCH: "oneply"
+      JAVA_OPTS: "-Xmx256m --enable-native-access=ALL-UNNAMED -XX:+UseG1GC"
+    restart: unless-stopped
