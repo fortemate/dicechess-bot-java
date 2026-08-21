@@ -1,4 +1,4 @@
-package dicechess.bot;
+package com.fortemate.dicechess.bot;
 
 import lv.id.jc.dicechess.runtime.TurnContext;
 import org.junit.jupiter.api.AfterEach;

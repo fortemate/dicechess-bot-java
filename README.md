@@ -8,7 +8,7 @@
 
 Official **Java 25 (LTS)** baseline house bot and reference starter template for the [Dice Chess](https://dicechess.net) platform.
 
-Built with [`dicechess-bot-runtime`](https://github.com/rabestro/dicechess-bot-runtime), [`dicechess-engine`](https://github.com/fortemate/dicechess-engine) (JVM API), and Microsoft ONNX Runtime for Java.
+Built with [`dicechess-bot-runtime`](https://github.com/fortemate/dicechess-bot-runtime), [`dicechess-engine`](https://github.com/fortemate/dicechess-engine) (JVM API), and Microsoft ONNX Runtime for Java.
 
 ## Overview
 
@@ -72,7 +72,7 @@ java -jar target/dicechess-bot-java-1.0.5-SNAPSHOT.jar
 docker build -t dicechess-bot-java .
 docker run -p 8080:8080 \
   -e DICECHESS_WEBHOOK_SECRET="your-secret-token" \
-  ghcr.io/rabestro/dicechess-bot-java:latest
+  ghcr.io/fortemate/dicechess-bot-java:latest
 ```
 
 ## Registering & Connecting Your Bot ([`bots.jc.id.lv`](https://bots.jc.id.lv))
@@ -131,7 +131,7 @@ curl -X POST "https://play-api.jc.id.lv/bot/open-to-humans" \
 ## Creating Custom Strategies
 
 To create a custom bot strategy:
-1. Implement the `Strategy` interface in `src/main/java/dicechess/bot/`:
+1. Implement the `Strategy` interface in `src/main/java/com/fortemate/dicechess/bot/`:
    ```java
    public class MyCustomStrategy implements Strategy {
        @Override

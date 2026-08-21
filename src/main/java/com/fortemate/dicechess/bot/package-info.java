@@ -8,14 +8,14 @@
  *
  * <h2>Architecture Overview</h2>
  * <ul>
- *     <li>{@link dicechess.bot.Main}: Application entry point. Configures port, loads secrets from env,
+ *     <li>{@link com.fortemate.dicechess.bot.Main}: Application entry point. Configures port, loads secrets from env,
  *         instantiates evaluator and strategy, and launches the HTTP webhook server.</li>
- *     <li>{@link dicechess.bot.Strategy}: Core functional interface for decision-making logic.
+ *     <li>{@link com.fortemate.dicechess.bot.Strategy}: Core functional interface for decision-making logic.
  *         Maps a {@link lv.id.jc.dicechess.runtime.TurnContext} to a list of long algebraic move notations.</li>
- *     <li>{@link dicechess.bot.OnnxStrategy}: Primary strategy implementation. Parses DFEN via
+ *     <li>{@link com.fortemate.dicechess.bot.OnnxStrategy}: Primary strategy implementation. Parses DFEN via
  *         {@link dicechess.engine.jvmapi.JvmApi}, expands full multi-move turns via {@link dicechess.engine.jvmapi.JvmApi#legalTurns},
- *         and scores candidate positions using {@link dicechess.bot.OnnxEvaluator}.</li>
- *     <li>{@link dicechess.bot.OnnxEvaluator}: Manages ONNX Runtime sessions ({@code OrtSession}) to evaluate
+ *         and scores candidate positions using {@link com.fortemate.dicechess.bot.OnnxEvaluator}.</li>
+ *     <li>{@link com.fortemate.dicechess.bot.OnnxEvaluator}: Manages ONNX Runtime sessions ({@code OrtSession}) to evaluate
  *         board positions via neural network models (e.g. {@code baseline.onnx}). Falls back gracefully
  *         to {@link dicechess.engine.jvmapi.JvmApi#evaluate} engine heuristic evaluation if no model file is provided.</li>
  * </ul>
@@ -32,4 +32,4 @@
  * @see lv.id.jc.dicechess.runtime.CustomHandlerServer
  * @see lv.id.jc.dicechess.runtime.WebhookHandler
  */
-package dicechess.bot;
+package com.fortemate.dicechess.bot;
