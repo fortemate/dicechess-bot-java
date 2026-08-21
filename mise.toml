@@ -28,5 +28,5 @@ description = "Generate Javadoc HTML documentation"
 run = "mvn javadoc:javadoc"
 
 [tasks.run]
-description = "Run bot application locally"
-run = "mvn exec:java -Dexec.mainClass='dicechess.bot.Main'"
+description = "Run the Java bot locally (port 8080)"
+run = "mvn exec:java -Dexec.mainClass='com.fortemate.dicechess.bot.Main'"

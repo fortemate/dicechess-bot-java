@@ -1,4 +1,4 @@
-package dicechess.bot;
+package com.fortemate.dicechess.bot;
 
 import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;

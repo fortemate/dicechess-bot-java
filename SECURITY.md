@@ -11,8 +11,8 @@
 
 This security policy applies to the `dicechess-bot-java` reference house bot service and starter template.
 The Dice Chess rules engine and the core platform API/services are governed by the security policies of their respective repositories:
-- [dicechess-engine-scala](https://github.com/rabestro/dicechess-engine-scala/security/policy)
-- [dicechess-play-api](https://github.com/rabestro/dicechess-play-api/security/policy)
+- [dicechess-engine](https://github.com/fortemate/dicechess-engine/security/policy)
+- [dicechess-play-api](https://github.com/fortemate/dicechess-play-api/security/policy)
 
 ## Reporting a Vulnerability
 

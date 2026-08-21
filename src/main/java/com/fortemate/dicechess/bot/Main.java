@@ -1,4 +1,4 @@
-package dicechess.bot;
+package com.fortemate.dicechess.bot;
 
 import com.sun.net.httpserver.HttpServer;
 import lv.id.jc.dicechess.runtime.CustomHandlerServer;
