@@ -37,7 +37,7 @@
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <dicechess.engine.version>0.6.0</dicechess.engine.version>
+        <dicechess.engine.version>0.7.2</dicechess.engine.version>
         <dicechess.bot-runtime.version>1.0.1</dicechess.bot-runtime.version>
         <onnxruntime.version>1.29.0</onnxruntime.version>
         <junit.jupiter.version>6.1.3</junit.jupiter.version>
