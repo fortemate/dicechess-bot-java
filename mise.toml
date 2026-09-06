@@ -1,6 +1,6 @@
 [tools]
 java = "temurin-25"
-maven = "latest"
+maven = "3.9.16" # pinned; also provisions the Jules VM (image has Maven 3.9 but JDK 21)
 gh = "latest"
 
 [tasks.compile]
