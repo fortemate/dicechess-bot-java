@@ -149,5 +149,5 @@ For reporting vulnerabilities, see our [Security Policy](SECURITY.md).
 
 ## License
 
-[GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE).
+[GNU Affero General Public License v3.0 only (AGPL-3.0-only)](LICENSE).
 Model files (`models/*.onnx`) are proprietary platform evaluation artifacts.
