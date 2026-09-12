@@ -22,7 +22,7 @@ LABEL org.opencontainers.image.title="Dice Chess Java Bot" \
       org.opencontainers.image.source="https://github.com/fortemate/dicechess-bot-java" \
       org.opencontainers.image.documentation="https://bots.jc.id.lv" \
       org.opencontainers.image.vendor="Fortemate" \
-      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opencontainers.image.licenses="AGPL-3.0-only" \
       org.opencontainers.image.base.name="docker.io/library/eclipse-temurin:25-jre"
 
 WORKDIR /app

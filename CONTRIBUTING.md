@@ -12,16 +12,16 @@ same pull request (see [CLA.md](CLA.md), "How to Sign"). The `CI: CLA` status ch
 until the entry is present. Pull requests from the repository owner, organization
 members, and bots are exempt.
 
-Why a CLA: the project follows an open-core model. The public repositories are AGPL-3.0,
+Why a CLA: the project follows an open-core model. The public repositories are AGPL-3.0-only,
 and the project owner retains the ability to combine the code with closed-source modules
 and to offer it under additional licenses. The CLA preserves that option while your
-contribution always remains available under AGPL-3.0 — and you keep the copyright to your
+contribution always remains available under AGPL-3.0-only — and you keep the copyright to your
 work. A plain DCO (`Signed-off-by`) would not grant relicensing rights, which is why a CLA
 is used instead.
 
 > **Just building your own bot?** You do not need to sign anything to *use* this
 > repository as a template — fork it and go. The CLA applies only to contributions sent
-> back here. Note that this repository is AGPL-3.0 and links the AGPL-3.0 engine, so a
+> back here. Note that this repository is AGPL-3.0-only and links the AGPL-3.0-only engine, so a
 > fork you distribute carries those terms; the MIT starter kits
 > ([Python](https://github.com/rabestro/dicechess-bot-python),
 > [TypeScript](https://github.com/rabestro/dicechess-bot-typescript)) are the permissive
