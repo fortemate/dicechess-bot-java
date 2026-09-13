@@ -3,7 +3,7 @@ package com.fortemate.dicechess.bot;
 import dicechess.engine.domain.GameState;
 import dicechess.engine.jvmapi.JvmApi;
 
-import lv.id.jc.dicechess.runtime.TurnContext;
+import com.fortemate.dicechess.runtime.TurnContext;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;

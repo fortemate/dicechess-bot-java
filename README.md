@@ -20,7 +20,7 @@ This repository serves two primary roles:
 
 - **Java 25 & JDK HttpServer**: Built on modern Java 25 (LTS) with minimal dependencies and zero heavy frameworks (~64 MB RAM footprint).
 - **ONNX Model Evaluation**: Evaluates candidate full-turn move paths using ONNX value models (`models/baseline.onnx`) with JvmApi engine heuristic fallback.
-- **Bot Runtime Integration**: Uses `lv.id.jc:dicechess-bot-runtime` for HMAC-SHA256 signature verification, webhook handshakes, and `TurnContext` processing.
+- **Bot Runtime Integration**: Uses `com.fortemate:dicechess-bot-runtime` (v2) for HMAC-SHA256 signature verification, zero-downtime dual-key rotation (`WebhookKeys`), webhook handshakes, and decision-oriented `BotStrategy` processing.
 - **Engine Rules Integration**: Uses the `com.fortemate:dicechess-engine_3:0.3.0` JvmApi facade from Maven Central for strict DFEN parsing, legal turn path generation, and game state evaluation.
 
 ## Architecture
@@ -41,12 +41,13 @@ graph TD
 
 ## Environment Variables
 
-| Variable                   | Default                | Description                                                |
-|----------------------------|------------------------|------------------------------------------------------------|
-| `DICECHESS_WEBHOOK_SECRET` | `""`                   | Per-bot secret token for HMAC-SHA256 webhook verification  |
-| `PORT`                     | `8080`                 | HTTP server listening port (Koyeb / Cloud Run / VPS)       |
-| `MODEL_PATH`               | `models/baseline.onnx` | Path to the ONNX value model file                          |
-| `JAVA_OPTS`                | `-Xmx256m --enable-native-access=ALL-UNNAMED` | JVM memory, GC, and native access settings |
+| Variable                        | Default                | Description                                                |
+|---------------------------------|------------------------|------------------------------------------------------------|
+| `DICECHESS_WEBHOOK_SECRET`      | `""`                   | Active secret token for HMAC-SHA256 webhook verification   |
+| `DICECHESS_WEBHOOK_NEXT_SECRET` | `""`                   | Optional pending secret token for zero-downtime rotation   |
+| `PORT`                          | `8080`                 | HTTP server listening port (Koyeb / Cloud Run / VPS)       |
+| `MODEL_PATH`                    | `models/baseline.onnx` | Path to the ONNX value model file                          |
+| `JAVA_OPTS`                     | `-Xmx256m --enable-native-access=ALL-UNNAMED` | JVM memory, GC, and native access settings |
 
 ## Quick Start
 
@@ -140,7 +141,7 @@ To create a custom bot strategy:
        }
    }
    ```
-2. Pass your strategy to `WebhookHandler` in `Main.java`.
+2. Pass your strategy to `WebhookHandler` in `Main.java` (since `Strategy` extends `BotStrategy`, it integrates directly with the runtime's turn and optional decision cycle).
 
 ## Contributing & Security
 
