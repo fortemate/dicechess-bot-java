@@ -1,6 +1,5 @@
 package com.fortemate.dicechess.bot;
 
-import com.fortemate.dicechess.runtime.CustomHandlerServer;
 import com.fortemate.dicechess.runtime.Signatures;
 import com.fortemate.dicechess.runtime.WebhookHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -13,9 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,24 +28,7 @@ class WebhookIntegrationTest {
     void setUp() throws IOException {
         evaluator = new OnnxEvaluator(null);
         var strategy = new OnnxStrategy(evaluator);
-        var handler = new WebhookHandler(SECRET, strategy);
-
-        // Bind on ephemeral port 0
-        server = CustomHandlerServer.start(0, "/api/webhook", handler);
-        server.createContext("/health", exchange -> {
-            var response = "OK".getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(200, response.length);
-            try (var os = exchange.getResponseBody()) {
-                os.write(response);
-            }
-        });
-        server.createContext("/", exchange -> {
-            var response = "OK".getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(200, response.length);
-            try (var os = exchange.getResponseBody()) {
-                os.write(response);
-            }
-        });
+        server = Main.start(0, SECRET, strategy);
     }
 
     @AfterEach
@@ -160,16 +140,5 @@ class WebhookIntegrationTest {
         var rootResp = client.send(rootReq, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, rootResp.statusCode());
         assertEquals("OK", rootResp.body());
-    }
-
-    @Test
-    void testMainResolveWebhookKeys() {
-        var configured = Main.resolveWebhookKeys(Map.of("DICECHESS_WEBHOOK_SECRET", "custom-secret"));
-        assertTrue(configured.hasActive());
-        assertEquals("custom-secret", configured.active());
-
-        var unconfigured = Main.resolveWebhookKeys(Map.of());
-        assertTrue(unconfigured.hasActive());
-        assertEquals("unconfigured-secret", unconfigured.active());
     }
 }

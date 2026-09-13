@@ -79,4 +79,11 @@ class OnnxStrategyTest {
         assertFalse(strategy.onDoubleOpportunity(null).offerDouble(), "Should roll without offering double by default");
         assertFalse(strategy.onDoubleDecision(null).acceptDouble(), "Should decline double by default");
     }
+
+    @Test
+    void testStrategyApplyMatchesChooseMoves() {
+        var dfen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 p";
+        var context = new TurnContext("test-game", "White", 1L, dfen, null, List.of(), false);
+        assertEquals(strategy.chooseMoves(context), strategy.apply(context));
+    }
 }
