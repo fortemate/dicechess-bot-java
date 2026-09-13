@@ -1,16 +1,19 @@
 package com.fortemate.dicechess.bot;
 
-import lv.id.jc.dicechess.runtime.TurnContext;
+import com.fortemate.dicechess.runtime.BotStrategy;
+import com.fortemate.dicechess.runtime.TurnAction;
+import com.fortemate.dicechess.runtime.TurnContext;
 
 import java.util.List;
 import java.util.function.Function;
 
 /**
  * Common functional interface for Java bot strategies mapping a TurnContext to move notations.
- * Implementations must return a list of UCI move notations representing a complete turn.
+ * Extends {@link BotStrategy} to provide decision-oriented runtime integration while allowing
+ * simple functional implementations of {@link #chooseMoves(TurnContext)}.
  */
 @FunctionalInterface
-public interface Strategy extends Function<TurnContext, List<String>> {
+public interface Strategy extends BotStrategy, Function<TurnContext, List<String>> {
 
     /**
      * Choose the best list of move notations (micro-moves forming a turn) for the given TurnContext.
@@ -20,6 +23,11 @@ public interface Strategy extends Function<TurnContext, List<String>> {
      *         or an error occurs.
      */
     List<String> chooseMoves(TurnContext context);
+
+    @Override
+    default TurnAction onTurn(TurnContext context) {
+        return new TurnAction(chooseMoves(context));
+    }
 
     @Override
     default List<String> apply(TurnContext context) {

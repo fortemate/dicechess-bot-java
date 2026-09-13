@@ -1,13 +1,15 @@
 package com.fortemate.dicechess.bot;
 
+import com.fortemate.dicechess.runtime.CustomHandlerServer;
+import com.fortemate.dicechess.runtime.WebhookHandler;
+import com.fortemate.dicechess.runtime.WebhookKeys;
 import com.sun.net.httpserver.HttpServer;
-import lv.id.jc.dicechess.runtime.CustomHandlerServer;
-import lv.id.jc.dicechess.runtime.WebhookHandler;
 
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * Entry point for the Dice Chess Java bot starter template.
@@ -30,22 +32,16 @@ public class Main {
      */
     @SuppressWarnings("java:S1172")
     public static void main(String[] args) {
-        var secret = System.getenv().getOrDefault("DICECHESS_WEBHOOK_SECRET", "");
-        if (secret.isEmpty()) {
-            logger.log(Level.WARNING, "DICECHESS_WEBHOOK_SECRET is not set — webhook verification handshake may fail");
-        }
-
+        var keys = resolveWebhookKeys();
         var modelPath = System.getenv().getOrDefault("MODEL_PATH", "models/baseline.onnx");
         var port = resolvePort();
 
         var evaluator = new OnnxEvaluator(modelPath);
         var strategy = new OnnxStrategy(evaluator);
 
-        var handler = new WebhookHandler(secret, strategy);
-
         HttpServer server;
         try {
-            server = CustomHandlerServer.start(port, DEFAULT_WEBHOOK_PATH, handler);
+            server = start(port, keys, strategy);
             // Register health check endpoints for Koyeb / Cloud Run / Kubernetes
             server.createContext("/", exchange -> {
                 var response = "OK".getBytes(StandardCharsets.UTF_8);
@@ -80,6 +76,59 @@ public class Main {
         } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * Resolves the webhook keys from system environment variables.
+     * Falls back to a placeholder key if neither active nor pending secret is configured.
+     *
+     * @return the resolved webhook keys
+     */
+    static WebhookKeys resolveWebhookKeys() {
+        return resolveWebhookKeys(System.getenv());
+    }
+
+    /**
+     * Resolves the webhook keys from the provided environment map.
+     *
+     * @param env the environment mapping
+     * @return the resolved webhook keys
+     */
+    static WebhookKeys resolveWebhookKeys(Map<String, String> env) {
+        try {
+            return WebhookKeys.fromEnvironment(env);
+        } catch (IllegalArgumentException _) {
+            logger.log(Level.WARNING, "Neither {0} nor {1} is configured — using placeholder secret",
+                    WebhookKeys.ENV_ACTIVE_SECRET, WebhookKeys.ENV_PENDING_SECRET);
+            return WebhookKeys.activeOnly("unconfigured-secret");
+        }
+    }
+
+    /**
+     * Starts the webhook server on an explicit port with configured keys and strategy.
+     *
+     * @param port the listening port (0 for ephemeral)
+     * @param keys the webhook key configuration
+     * @param strategy the bot strategy
+     * @return the running HTTP server
+     * @throws IOException if the server fails to bind
+     */
+    public static HttpServer start(int port, WebhookKeys keys, Strategy strategy) throws IOException {
+        var handler = new WebhookHandler(keys, strategy);
+        return CustomHandlerServer.start(port, DEFAULT_WEBHOOK_PATH, handler);
+    }
+
+    /**
+     * Starts the webhook server with a single active secret.
+     *
+     * @param port the listening port (0 for ephemeral)
+     * @param secret the active secret
+     * @param strategy the bot strategy
+     * @return the running HTTP server
+     * @throws IOException if the server fails to bind
+     */
+    public static HttpServer start(int port, String secret, Strategy strategy) throws IOException {
+        return start(port, WebhookKeys.activeOnly(secret), strategy);
     }
 
     /**
