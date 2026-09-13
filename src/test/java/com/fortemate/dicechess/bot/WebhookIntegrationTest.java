@@ -23,9 +23,11 @@ class WebhookIntegrationTest {
 
     private HttpServer server;
     private OnnxEvaluator evaluator;
+    private HttpClient client;
 
     @BeforeEach
     void setUp() throws IOException {
+        client = HttpClient.newHttpClient();
         evaluator = new OnnxEvaluator(null);
         var strategy = new OnnxStrategy(evaluator);
         server = Main.start(0, SECRET, strategy);
@@ -39,12 +41,14 @@ class WebhookIntegrationTest {
         if (evaluator != null) {
             evaluator.close();
         }
+        if (client != null) {
+            client.close();
+        }
     }
 
     @Test
     void testWebhookRejectsUnauthenticatedRequest() throws Exception {
         var port = server.getAddress().getPort();
-        var client = HttpClient.newHttpClient();
 
         // A bare GET without proper HMAC signature headers should be rejected
         var request = HttpRequest.newBuilder()
@@ -59,7 +63,6 @@ class WebhookIntegrationTest {
     @Test
     void testVerificationHandshake() throws Exception {
         var port = server.getAddress().getPort();
-        var client = HttpClient.newHttpClient();
 
         var body = "{\"type\":\"verification\",\"nonce\":\"test-nonce-123\"}";
         var request = HttpRequest.newBuilder()
@@ -76,7 +79,6 @@ class WebhookIntegrationTest {
     @Test
     void testSignedYourTurnDelivery() throws Exception {
         var port = server.getAddress().getPort();
-        var client = HttpClient.newHttpClient();
 
         var body = """
                 {"type":"yourTurn","gameId":"game-123","seat":"White","state":{"version":1,"dfen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 p","activeSeat":"White","dicePending":true}}
@@ -101,7 +103,6 @@ class WebhookIntegrationTest {
     @Test
     void testSignedDeliveryWithInvalidSignature() throws Exception {
         var port = server.getAddress().getPort();
-        var client = HttpClient.newHttpClient();
 
         var body = """
                 {"type":"yourTurn","gameId":"game-123","seat":"White","state":{"version":1,"dfen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 p","activeSeat":"White","dicePending":true}}
@@ -123,7 +124,6 @@ class WebhookIntegrationTest {
     @Test
     void testHealthCheckAndRootEndpoints() throws Exception {
         var port = server.getAddress().getPort();
-        var client = HttpClient.newHttpClient();
 
         var healthReq = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:" + port + "/health"))

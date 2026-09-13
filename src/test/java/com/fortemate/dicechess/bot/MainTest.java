@@ -56,7 +56,8 @@ class MainTest {
 
     @Test
     void testResolveWebhookKeysFromSystemEnvironmentDoesNotThrow() {
-        assertDoesNotThrow(() -> Main.resolveWebhookKeys());
+        org.junit.jupiter.api.function.ThrowingSupplier<?> supplier = Main::resolveWebhookKeys;
+        assertDoesNotThrow(supplier);
     }
 
     @Test
@@ -74,11 +75,12 @@ class MainTest {
         assertNotNull(server, "startApplication must return running server when keys are provided");
         try {
             var port = server.getAddress().getPort();
-            var client = HttpClient.newHttpClient();
-            var req = HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/health")).GET().build();
-            var resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-            assertEquals(200, resp.statusCode());
-            assertEquals("OK", resp.body());
+            try (var client = HttpClient.newHttpClient()) {
+                var req = HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/health")).GET().build();
+                var resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+                assertEquals(200, resp.statusCode());
+                assertEquals("OK", resp.body());
+            }
         } finally {
             server.stop(0);
         }
