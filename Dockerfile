@@ -1,5 +1,5 @@
 # Multi-stage build (using glibc-based Debian image for ONNX Runtime compatibility)
-FROM eclipse-temurin:25-jdk@sha256:8c0a84ea11c8f6ed52600fc19f1040121f2a162998e9f50a5faebbbad9172dcc AS builder
+FROM eclipse-temurin:25-jdk@sha256:2d5d5e9b533342a565907c84f47a2ec298c40cde7b13a3ca85d4950fa456a641 AS builder
 RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
 
@@ -11,7 +11,7 @@ COPY models ./models
 RUN mvn clean package -DskipTests
 
 # Runtime stage (glibc-based Debian image for ONNX Runtime native lib compatibility)
-FROM eclipse-temurin:25-jre@sha256:fcd7fd7b387f94bb2ac461478a7436ad8e349924c374ea8313919624dceae636
+FROM eclipse-temurin:25-jre@sha256:dbb43d81099eec91e0800226ed2296d03146ee7857165b95112372ad0d67e87f
 
 # Baseline OCI metadata so a plain `docker build` or `docker compose build` also
 # produces a described image. The CD workflow overrides the dynamic fields
