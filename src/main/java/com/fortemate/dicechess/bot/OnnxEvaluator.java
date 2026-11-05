@@ -88,7 +88,7 @@ public class OnnxEvaluator implements AutoCloseable {
     public float evaluate(GameState state, int color) {
         if (!isLoaded || session == null || env == null) {
             // Engine heuristic fallback
-            return JvmApi.evaluate(state, color);
+            return (float) JvmApi.evaluate(state, color);
         }
 
         try {
@@ -116,7 +116,7 @@ public class OnnxEvaluator implements AutoCloseable {
             }
         } catch (OrtException e) {
             logger.log(Level.WARNING, "Error running ONNX inference: {0}. Falling back to engine evaluation.", e.getMessage());
-            return JvmApi.evaluate(state, color);
+            return (float) JvmApi.evaluate(state, color);
         }
     }
 
