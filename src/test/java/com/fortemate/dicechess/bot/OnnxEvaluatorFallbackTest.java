@@ -50,8 +50,8 @@ class OnnxEvaluatorFallbackTest {
 
         try (var evaluator = new OnnxEvaluator(null)) {
             assertFalse(evaluator.isLoaded());
-            assertEquals(JvmApi.evaluate(state, 0), evaluator.evaluate(state, 0), "White evaluation should match JvmApi.evaluate");
-            assertEquals(JvmApi.evaluate(state, 1), evaluator.evaluate(state, 1), "Black evaluation should match JvmApi.evaluate");
+            assertEquals((float) JvmApi.evaluate(state, 0), evaluator.evaluate(state, 0), "White evaluation should match JvmApi.evaluate");
+            assertEquals((float) JvmApi.evaluate(state, 1), evaluator.evaluate(state, 1), "Black evaluation should match JvmApi.evaluate");
         }
     }
 }
