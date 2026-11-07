@@ -71,6 +71,13 @@ Examples: `bug/42-fix-native-access-warning`, `feat/add-onnx-evaluator`, `chore/
 
 <!-- /dc-shared:issue-management -->
 
+## Contributor routing
+
+If you cannot access the private triage instructions, use the public contribution and Issue templates
+and ask a maintainer to set the Issue's `Execution tier` and other organization Project fields.
+Maintainers own that routing step; private-document access is not a prerequisite for contributing.
+This does not authorize external agent dispatch or change the issueless branch rules above.
+
 ## Developer Workflows
 - **Core Runner**: Use `mise run <task>` from the root of the repository for all development tasks.
 - **Local Validation**: `mise run check` compiles code, runs unit & integration tests, and builds the shaded JAR.
